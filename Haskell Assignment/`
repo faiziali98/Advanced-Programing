@@ -1,0 +1,119 @@
+import Data.List
+import System.IO
+
+
+-- Data Types
+data Body = Body{
+	px :: Double, py :: Double,vx :: Double, vy :: Double,mass :: Double
+} deriving (Eq, Show)
+
+data Accel = Accel{
+	ax :: Double, ay :: Double
+}
+
+data Quad = Quad{
+    xmid :: Double, ymid :: Double, length :: Double
+}| Nothg deriving (Eq, Show)
+
+data DisQuads = AllPQuads{
+	nwq :: Quad, neq :: Quad, swq :: Quad, seq :: Quad
+}| Noquad deriving (Eq, Show)
+
+data BHTree = LeafNode {
+	body :: Body,
+	region :: Quad
+}| InternalNode { 
+	quad :: Quad, nw :: BHTree, ne :: BHTree, sw :: BHTree, se :: BHTree,
+	totalMass :: Double, comx :: Double, comy :: Double
+}| Empty{
+	quad :: Quad
+} deriving (Eq, Show)
+
+-- Main Body
+
+newBody :: [Char] -> Body
+newBody = makeBody.convert.words
+	where 
+		makeBody (x:y:z:e:f:g) = Body x y z e f
+		convert [] = []
+		convert (x:xs) = (read x :: Double) : (convert xs)
+
+contains :: Body -> Quad -> Bool
+contains (Body x y _ _ _) (Quad xq yq l)
+	| x <= xq + (l/2.0) && x>=xq-(l/2.0) && y <= yq+(l/2.0) && y>=yq-(l/2.0) = True 
+	| otherwise = False
+
+containss :: Body -> BHTree -> Bool
+containss bdy (Empty ql)
+	| bdy `contains` ql = True 
+	| otherwise = False
+containss bdy (LeafNode bl ql)
+	| bdy `contains` ql = True 
+	| otherwise = False
+containss bdy (InternalNode qin _ _ _ _ _ _  _)
+	| bdy `contains` qin = True 
+	| otherwise = False
+
+disQuad :: Quad -> [Quad]
+disQuad (Quad xmid ymid length) = [q1, q2, q3, q4]
+	where
+		q1 = Quad (xmid-(length/4.0)) (ymid+(length/4.0)) (length/2.0)
+		q2 = Quad (xmid+(length/4.0)) (ymid+(length/4.0)) (length/2.0)
+		q3 = Quad (xmid-(length/4.0)) (ymid-(length/4.0)) (length/2.0)
+		q4 = Quad (xmid+(length/4.0)) (ymid-(length/4.0)) (length/2.0)		
+
+comnmass :: BHTree -> Double
+comnmass (LeafNode (Body _ _ _ _ m ) _ ) = m
+comnmass (Empty q) = 0
+comnmass (InternalNode _ a b c d _ _ _) = (comnmass a) + (comnmass b) + (comnmass c) + (comnmass d)
+
+inserts :: Body -> BHTree -> BHTree
+inserts bdy (Empty q) = LeafNode bdy q
+
+inserts b@(Body x y xv yv m) l@(LeafNode bd q) = inserts b (InternalNode q inw ine isw ise 0 0 0)
+	where
+		k = disQuad q
+		inw | bd `contains` (k !! 0) = inserts bd (Empty (k !! 0)) | otherwise = Empty (k !! 0)
+		ine | bd `contains` (k !! 1) = inserts bd (Empty (k !! 1)) | otherwise = Empty (k !! 1)
+		isw | bd `contains` (k !! 2) = inserts bd (Empty (k !! 2)) | otherwise = Empty (k !! 2)
+		ise | bd `contains` (k !! 3) = inserts bd (Empty (k !! 3)) | otherwise = Empty (k !! 3)
+
+inserts b@(Body x y xv yv m) l@(InternalNode q anw ans asw ase _ _ _)  
+		| b `containss` anw = (InternalNode q (inserts b anw) ans asw ase 0 0 0) 
+		| b `containss` ans = (InternalNode q anw (inserts b ans) asw ase 0 0 0)
+		| b `containss` asw = (InternalNode q anw ans (inserts b asw) ase 0 0 0)
+		| b `containss` ase = (InternalNode q anw ans asw (inserts b ase) 0 0 0)
+
+updatePos :: Body -> Double -> Body
+updatePos (Body x y vx vy m) timeStep = Body ( x+ timeStep * vx ) ( y+ timeStep * vy ) vx vy m
+distance :: Body -> Body -> Double
+distance (Body a b c d e) (Body a1 b1 c1 d1 e1) = sqrt ((a-a1)^2 + (b-b1)^2)
+
+k :: Body -> Double
+k (Body x y z l m ) = x+y+z+l+m 
+
+q (Quad xmid ymid length)  = Quad (2/2) (3/3) (4/4)
+--m = update x 2
+
+b1 = newBody "1.4960e+11 0.0000e+00 0.0000e+00 2.9800e+04 5.9740e+24"
+b2 = newBody "2.2790e+11 0.0000e+00 0.0000e+00 2.4100e+04 6.4190e+23" 
+b3 = newBody "5.7900e+10 0.0000e+00 0.0000e+00 4.7900e+04 3.3020e+23"
+b4 = newBody "0.0000e+00 0.0000e+00 0.0000e+00 0.0000e+00 1.9890e+30"
+b5 = newBody "1.0820e+11 0.0000e+00 0.0000e+00 3.5000e+04 4.8690e+24"
+
+qa = Quad (2.50e+11/2) (2.50e+11/2) 2.50e+11
+arr = [b5,b4,b3,b2,b1]
+
+t = inserts b1 (Empty qa) 
+tt = inserts b2 t
+
+makeTree :: [Body] -> BHTree
+makeTree [x] = inserts x (Empty qa) 
+makeTree (x:xs) = inserts x (makeTree xs) 
+
+tk = makeTree arr
+--d = distance x m
+--p = show m
+
+main = do
+	printt = show tt

@@ -1,0 +1,72 @@
+doctype html
+html
+  head
+    script(src='/socket.io/socket.io.js')
+    script(src='jquery.min.js')
+    script(src='client.js')
+    style button {height: 50px; width: 50px; font-size: 20pt}
+    style #sendita, #senditp {height: 40px; width: 120px; font-size: 12pt}
+  body
+    text(id = 's1') Top:
+    text(id = 'sc0')
+    #score1
+    text(id = 's2') Second:
+    text(id = 'sc1')
+    #score2
+    text(id = 's3') Third:
+    text(id = 'sc2')
+    #score3
+    text(id = 'win') Last Round Winner:
+    text(id = 'winner')
+    #lastwin
+    text(id = 'time') Time Left:
+    text(id = 'tt')
+    #time
+    #fromuser
+    text(id = 'scoretext') Total Score:
+    text(id = 'scoring')
+    #score
+    text(id = 'text') Username:
+    input(type = 'text', id = 'username')
+    text(id = 'space')
+    button(id = 'sendita') All tournament
+    button(id = 'senditp') Private Game
+    #chatlog
+    table
+      tr
+        td
+          button#m0
+        td
+          button#m1
+        td
+          button#m2
+        td
+          button#m3
+      tr
+        td
+          button#m4
+        td
+          button#m5
+        td
+          button#m6
+        td
+          button#m7
+      tr
+        td
+          button#m8
+        td
+          button#m9
+        td
+          button#m10
+        td
+          button#m11
+      tr
+        td
+          button#m12
+        td
+          button#m13
+        td
+          button#m14
+        td
+          button#m15
+    #message

@@ -1,0 +1,8 @@
+[yy, yy, yy, yy, yy, yy, yy, yy,
+ yy, yy, yy, yy, yy, yy, yy, yy,
+ yy, yy, yy, yy, yy, yy, yy, yy,
+ yy, yy, yy, zz, xx, yy, yy, yy,
+ yy, yy, yy, xx, zz, yy, yy, yy,
+ yy, yy, yy, yy, yy, yy, yy, yy,
+ yy, yy, yy, yy, yy, yy, yy, yy,
+ yy, yy, yy, yy, yy, yy, yy, yy]

@@ -1,0 +1,40 @@
+button {border-radius: 50px;height: 50px; width: 50px; border:1px green solid;background-color: green}
+body{
+  background-image: url("download.jpg");
+}
+#but,#but1,#but3,#but2{
+  background-color: green;
+  border: 2px solid black;
+  width: 12%;
+  height: 12%;
+  display: block;
+  float: left;
+  border-right: 0px;
+  border-bottom: 0px;
+}
+#but1{
+  border-right: 2px solid black;
+}
+#but2{
+  border-bottom: 2px solid black;
+}
+#but3{
+  border-right: 2px solid black;
+  border-bottom: 2px solid black;
+}
+.center,.footer,.main {
+    margin: auto;
+    width: 60%;
+    border: 3px solid #73AD21;
+    padding: 10px;
+    text-align: center;
+    background-color:white;
+}
+.footer{
+  margin-top: 6%;
+}
+.main{
+  padding:0px;
+  width:40%;
+  height:40%;
+}
